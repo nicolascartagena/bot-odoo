@@ -4,7 +4,8 @@
 const fs = require('node:fs')
 const path = require('node:path')
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js')
-const { token } = require('./config.json')
+const { token, guildId, channelId } = require('./config.json')
+const cron = require('cron');
 
 // Client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -32,6 +33,14 @@ for(const folder of commandFolders) {
 
 client.once(Events.ClientReady, c => {
     console.log(`Ready! Logged in as ${c.user.tag}`);
+
+    let scheduledMessage = new cron.CronJob('00 00 13 * * 1,5', () => {
+        const channel = client.channels.cache.get(channelId);
+        channel.send('@everyone Por favor carguen sus horas, Muchas gracias por su atención!');
+    });
+    
+    scheduledMessage.start();
+
 });
 
 client.on(Events.InteractionCreate, async interaction => {
